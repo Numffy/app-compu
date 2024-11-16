@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+
 import {
   Form,
   FormControl,
@@ -40,6 +41,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function Login() {
+
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -136,7 +139,7 @@ export default function Login() {
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
             ¿No tienes una cuenta?{" "}
-            <a href="/register/user" className="text-blue-600 hover:underline">
+            <a href="/optionreg" className="text-blue-600 hover:underline">
               Regístrate
             </a>
           </p>

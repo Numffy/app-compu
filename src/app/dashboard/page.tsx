@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from 'react'
-import { Search, MapPin, Calendar, DollarSign, ChevronRight, Clock, Award } from 'lucide-react'
+import { Search, MapPin, Briefcase, Calendar, DollarSign, ChevronRight, Clock, Award } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 
 interface JobOffer {
   id: string;
@@ -22,8 +23,10 @@ interface JobOffer {
 
 export default function CompuTrabajoHome() {
   const [jobOffers, setJobOffers] = useState<JobOffer[]>([]);
+  const [filteredOffers, setFilteredOffers] = useState<JobOffer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchJobOffers = async () => {
@@ -35,6 +38,7 @@ export default function CompuTrabajoHome() {
         }
         const data = await response.json();
         setJobOffers(data);
+        setFilteredOffers(data);
         setError(null);
       } catch (error) {
         console.error('Error fetching job offers:', error);
@@ -46,6 +50,19 @@ export default function CompuTrabajoHome() {
 
     fetchJobOffers();
   }, []);
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    if (!value.trim()) {
+      setFilteredOffers(jobOffers);
+      return;
+    }
+    const filtered = jobOffers.filter(offer => 
+      offer.title.toLowerCase().includes(value.toLowerCase()) ||
+      offer.description.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredOffers(filtered);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -66,8 +83,26 @@ export default function CompuTrabajoHome() {
         <section className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-4">Encuentra el trabajo de tus sueños</h2>
           <div className="flex flex-col sm:flex-row gap-2">
-            <Input type="text" placeholder="¿Qué trabajo buscas?" className="flex-grow" />
-            <Input type="text" placeholder="¿Dónde?" className="sm:w-1/3" />
+            <Command className="rounded-lg border shadow-md">
+              <CommandInput
+                placeholder="Buscar ofertas de trabajo..."
+                value={searchTerm}
+                onValueChange={handleSearch}
+              />
+              {searchTerm && (
+                <CommandGroup>
+                  {filteredOffers.length === 0 ? (
+                    <CommandEmpty>No se encontraron ofertas.</CommandEmpty>
+                  ) : (
+                    filteredOffers.slice(0, 5).map((offer) => (
+                      <CommandItem key={offer.id} onSelect={() => handleSearch(offer.title)}>
+                        {offer.title}
+                      </CommandItem>
+                    ))
+                  )}
+                </CommandGroup>
+              )}
+            </Command>
             <Button type="submit" className="bg-blue-600 text-white">
               <Search className="w-4 h-4 mr-2" />
               Buscar
@@ -81,9 +116,11 @@ export default function CompuTrabajoHome() {
             <div className="text-center py-10">Cargando ofertas de trabajo...</div>
           ) : error ? (
             <div className="text-center py-10 text-red-600">{error}</div>
+          ) : filteredOffers.length === 0 ? (
+            <div className="text-center py-10">No se encontraron ofertas de trabajo.</div>
           ) : (
             <div className="space-y-4">
-              {jobOffers.map((job) => (
+              {filteredOffers.map((job) => (
                 <div key={job.id} className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start">
                     <div>
