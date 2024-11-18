@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, MapPin, Calendar, DollarSign, ChevronRight, Clock, Award, User } from 'lucide-react'
+import { Search, MapPin, Calendar, DollarSign, ChevronRight, Clock, Award, User, PlusCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -27,7 +27,7 @@ interface JobOffer {
   experience: string;
 }
 
-export default function CompuTrabajoHome() {
+export default function CompanyDashboard() {
   const [jobOffers, setJobOffers] = useState<JobOffer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,16 +61,24 @@ export default function CompuTrabajoHome() {
     router.push(`/search-results?query=${encodeURIComponent(searchQuery)}&location=${encodeURIComponent(location)}`);
   };
 
+  const handleCreateOffer = () => {
+    router.push('/create-offer');
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-blue-600 text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">CompuTrabajo</h1>
+          <h1 className="text-2xl font-bold">CompuTrabajo - Panel de Empresa</h1>
           <nav className="flex items-center space-x-4">
             <ul className="flex space-x-4">
-              <li><a href="#" className="hover:underline">Buscar empleos</a></li>
-              <li><a href="#" className="hover:underline">Empresas</a></li>
+              <li><a href="#" className="hover:underline">Mis Ofertas</a></li>
+              <li><a href="#" className="hover:underline">Candidatos</a></li>
             </ul>
+            <Button onClick={handleCreateOffer} variant="secondary" className="flex items-center">
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Crear Oferta
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="p-1">
@@ -80,13 +88,13 @@ export default function CompuTrabajoHome() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>
-                  <a href="/user-profile" className="flex w-full">Perfil</a>
+                  <a href="#" className="flex w-full">Perfil de la Empresa</a>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <a href="#" className="flex w-full">Ajustes</a>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <a href="#" className="flex w-full">Ofertas</a>
+                  <a href="#" className="flex w-full">Estadísticas</a>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -96,21 +104,14 @@ export default function CompuTrabajoHome() {
 
       <main className="container mx-auto mt-8 p-4">
         <section className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Encuentra el trabajo de tus sueños</h2>
+          <h2 className="text-2xl font-semibold mb-4">Gestiona tus ofertas de trabajo</h2>
           <div className="flex flex-col sm:flex-row gap-2">
             <Input 
               type="text" 
-              placeholder="¿Qué trabajo buscas?" 
+              placeholder="Buscar en mis ofertas" 
               className="flex-grow"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Input 
-              type="text" 
-              placeholder="¿Dónde?" 
-              className="sm:w-1/3"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
             />
             <Button type="submit" className="bg-blue-600 text-white" onClick={handleSearch}>
               <Search className="w-4 h-4 mr-2" />
@@ -120,7 +121,7 @@ export default function CompuTrabajoHome() {
         </section>
 
         <section className="mb-8">
-          <h3 className="text-xl font-semibold mb-4">Ofertas de trabajo destacadas</h3>
+          <h3 className="text-xl font-semibold mb-4">Mis Ofertas de Trabajo</h3>
           {isLoading ? (
             <div className="text-center py-10">Cargando ofertas de trabajo...</div>
           ) : error ? (
@@ -171,7 +172,7 @@ export default function CompuTrabajoHome() {
             </div>
           )}
           <div className="mt-6 text-center">
-            <Button variant="outline" className="px-8">Ver más ofertas</Button>
+            <Button variant="outline" className="px-8">Ver todas mis ofertas</Button>
           </div>
         </section>
       </main>
@@ -188,19 +189,19 @@ export default function CompuTrabajoHome() {
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4">Para candidatos</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:underline">Buscar empleos</a></li>
-                <li><a href="#" className="hover:underline">Consejos</a></li>
-                <li><a href="#" className="hover:underline">Crear CV</a></li>
-              </ul>
-            </div>
-            <div>
               <h4 className="text-lg font-semibold mb-4">Para empresas</h4>
               <ul className="space-y-2">
                 <li><a href="#" className="hover:underline">Publicar empleo</a></li>
                 <li><a href="#" className="hover:underline">Buscar candidatos</a></li>
                 <li><a href="#" className="hover:underline">Precios</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Recursos</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="hover:underline">Centro de ayuda</a></li>
+                <li><a href="#" className="hover:underline">Blog para empresas</a></li>
+                <li><a href="#" className="hover:underline">Guías de reclutamiento</a></li>
               </ul>
             </div>
           </div>

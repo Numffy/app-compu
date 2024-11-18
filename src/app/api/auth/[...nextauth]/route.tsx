@@ -1,9 +1,8 @@
-import { NextAuthOptions, Session } from "next-auth";
+import { Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-// Definimos las interfaces para los datos del JWT y de la sesión
 interface MyJWT extends JWT {
   id: string;
   email: string;
@@ -28,11 +27,11 @@ export const handler = NextAuth({
       },
       async authorize(credentials) {
         try {
-          const { email, password } = credentials!; 
+          const { email, password } = credentials!;
           const loginData = { email, password };
 
           const response = await fetch(
-           'http://172.21.234.224:3001/api/auth/user/login',
+            'http://172.21.234.224:3001/api/auth/user/login',
             {
               method: "POST",
               headers: {
@@ -46,8 +45,21 @@ export const handler = NextAuth({
             throw new Error("Error al iniciar sesión");
           }
 
-          const userdata = await response.json(); 
-          return userdata;
+          const userdata = await response.json();
+
+          // Aseguramos que los campos id, email y token están presentes y son de tipo string
+          if (!userdata?.id || !userdata?.email || !userdata?.token) {
+            throw new Error("Datos de usuario incompletos");
+          }
+
+          // Aseguramos que los valores sean cadenas de texto
+          const user = {
+            id: String(userdata.id),
+            email: String(userdata.email),
+            token: String(userdata.token),
+          };
+
+          return user;
         } catch (error: any) {
           console.error("Error en la autenticación:", error);
           return null;
@@ -55,18 +67,29 @@ export const handler = NextAuth({
       },
     }),
   ],
-  pages:{
-    signIn: "/auth/login"
+  pages: {
+    signIn: "/auth/login",
   },
-  session:{
-    strategy:"jwt"
+  session: {
+    strategy: "jwt",
   },
   callbacks: {
     async jwt({ token, user }) {
-      return {...token,...user}
+      if (user) {
+        // Asignamos los valores al token, asegurándonos de que sean cadenas
+        token.id = String(user.id);
+        token.email = String(user.email);
+        token.token = String(user.token);
+      }
+      return token;
     },
     async session({ session, token }) {
-      session.user = token as MyJWT;
+      // Asignamos los valores al session.user, asegurándonos de que sean cadenas
+      session.user = {
+        id: String(token.id),
+        email: String(token.email),
+        token: String(token.token),
+      };
       return session;
     },
   },

@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import {
   Form,
@@ -14,7 +14,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../../components/ui/form";
+} from "@/components/ui/form";
 import {
   Card,
   CardHeader,
@@ -22,12 +22,12 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "../../../components/ui/card";
+} from "@/components/ui/card";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from "../../../components/ui/alert";
+} from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { signIn } from "next-auth/react";
 
@@ -58,7 +58,7 @@ export default function Login() {
     setError(null);
     setSuccess(null);
 
-    const nextAuthResponse = await signIn("credentials", {
+    const nextAuthResponse = await signIn("company-credentials", {
       email,
       password,
       redirect: false,
@@ -69,7 +69,7 @@ export default function Login() {
       setError("El email o la contraseña son incorrectos."); // Mostrar un mensaje de error adecuado
     } else if (nextAuthResponse?.ok) {
       setSuccess("Inicio de sesión exitoso");
-      window.location.href = "/dashboard"; // Redirect to dashboard page
+      window.location.href = "/empresa"; // Redirect to dashboard page
     }
   }
 
